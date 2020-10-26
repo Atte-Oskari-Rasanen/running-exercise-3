@@ -1,6 +1,6 @@
 #parsing the files into mtDNA fasta and Ychr fasta. Atm Im parsing them into 
 #text files as I cant open fastas on my laptop.
-with open('GeneticData.txt', 'r') as genefile, open('mtDNA.txt','w') as outputdna, open('Ychr.txt','w') as outputY: 
+with open('GeneticData.txt', 'r') as genefile, open('mtDNA.txt','w') as outputdna, open('Ychr.txt','w') as outputY:
     #genefile=genefile.readlines()
     mtDNA_dict={}
     seq_listDNA=[]
@@ -34,7 +34,7 @@ with open('GeneticData.txt', 'r') as genefile, open('mtDNA.txt','w') as outputdn
 #do scoring based on this
 #we have the dictionary with the names as keys and values as seqs, no align. make single dics with one key, one value
 
-with open("mtDNA.txt", 'r') as DNAfile, open('Ychr.txt','r') as Ychrfile, open("scores.txt","w"): #writing to file?
+with open("mtDNA.txt", 'r') as DNAfile, open('Ychr.txt','r') as Ychrfile:
     
     DNA_dict={}
     lista1 = []
@@ -74,7 +74,7 @@ with open("mtDNA.txt", 'r') as DNAfile, open('Ychr.txt','r') as Ychrfile, open("
     del lista2[:]
     #print(Ychrom_dict)
     
-    def Scores_mtDNA(DNA_dict):
+    def Scores(DNA_dict):
         transition = ['AG', 'TC', 'GA', 'CT'] #the transition scores
         NTscoreTotal=0
         Seqscore_list=[]  #list for the total scores of NTs when comparing two seqs
@@ -124,55 +124,7 @@ with open("mtDNA.txt", 'r') as DNAfile, open('Ychr.txt','r') as Ychrfile, open("
         #print(Seqscore_list)
         return Seqscore_list
 
-    def Scores_Ychr(Ychrom_dict): 
-        transition = ['AG', 'TC', 'GA', 'CT'] #the transition scores
-        NTscoreTotal=0
-        Seqscore_list=[]  #list for the total scores of NTs when comparing two seqs
-        Identical_NTs=0   #for counting the identical ones once we start off the loops
-       
-        checked_pair=[]
-        
-        for key1, seq1 in Ychrom_dict.items():
-            for key2, seq2 in Ychrom_dict.items():
-                if key1==key2:
-                    continue
-                if [key1,key2] not in checked_pair:     #so we only add the key1-key2 comb if its not already in the set, avoiding repeats
-                    checked_pair.append([key1,key2])
-                Identical_NTs=0
-    
-                for NTa,NTb in zip(seq1, seq2): #parallel iteration-in one loop calculates the overall score for the alignment
-    
-                    if NTa==NTb:
-                        if '-' in NTa and '-' in NTb:
-                            score=0
-                            #NTscoreTotal.append(score)
-                            NTscoreTotal +=score
-                            
-                        else:
-                            score=1
-                            NTscoreTotal +=score
-                            Identical_NTs+=1   #keep count of identical NTs, identical gaps dont count
-                    
-                    else: #if the nucleotides are not the same
-                        if '-' in NTa or '-' in NTb: #if one sequence hNTas NTa gNTap when aligned to the other one the score is -1 
-                            score = -1
-                            NTscoreTotal +=score
-                        
-                        else: #if one of them is not a -, it creates a variable nt_sum that is the sum of the two nucleotides and compares them to the transition list
-                            NT_both = NTa + NTb
-                            if NT_both in transition: # transition:  score is -1
-                                score = -1
-                                NTscoreTotal +=score
-                            else: #if not transition, then transversion, which has a score of -2 that is added to NTscoreTotal
-                                score = -2
-                                NTscoreTotal +=score
-                    perc_identity=Identical_NTs/len(seq1)*100
-                    
-                    Header_Seq=str(key1) +' - '+str(key2) + ' : ' + str(perc_identity) +'%' +str(NTscoreTotal)   #a string, works as the header id, i.e. the two person's seqs that are compared
-                Seqscore_list.append(Header_Seq)
-                NTscoreTotal=0
-        #print(Seqscore_list)
-        return Seqscore_list
+
     
     mtDNA_results=Scores_mtDNA(DNA_dict)
     
